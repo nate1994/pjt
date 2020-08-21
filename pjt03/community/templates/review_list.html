@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2 class="text-center">리뷰 INDEX</h2>
+  <br>
+  <a href="{%url 'community:new_review'%}">new</a>
+  {% for review in reviews %}
+    <br>
+    {% comment %}  {%url 'community:detail' review.pk%} {% endcomment %}
+    제목:  <a href="{%url 'community:review_detail' review.pk%}">{{review.title}}</a>
+    <p>내용 : {{review.content}}</p>
+    <p>순위 : {{review.rank}}</p>
+    <p>created_at : {{review.create_at}}</p>
+    <hr>
+  {% endfor %}
+
+{% endblock  %}

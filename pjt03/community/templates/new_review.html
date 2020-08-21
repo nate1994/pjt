@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2 class="text-center">리뷰 작성</h2>
+  <div class="row d-flex justify-content-center">
+    <form action="{%url 'community:.create_review'%}" method = 'POST'>
+    {% csrf_token %}
+      title: <input type="text" name = 'title'>
+    <br>
+    <p>
+      content: 
+    </p>
+    <textarea name="content" id="" cols="30" rows="10">
+    </textarea>
+    <br>
+      rank: <input type="number" name='rank'>
+      <input type="submit" class='d-block'>
+    </form>
+  </div>
+
+{% endblock  %}
