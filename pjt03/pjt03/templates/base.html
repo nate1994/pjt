@@ -7,6 +7,24 @@
   <title>Document</title>
 </head>
 <body>    
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-dark">
+      <a class="navbar-brand text-white mr-auto p-2" href="#">Review</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse d-flex justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link text-secondary" href="{%url 'community:index'%}">메인</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-secondary" href="{%url 'community:new_review'%}">리뷰작성</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
   {%block content%}
   {% endblock %}
 

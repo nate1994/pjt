@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 
+
 {% block content %}
   <h2 class="text-center">리뷰 작성</h2>
   <div class="row d-flex justify-content-center">
@@ -7,9 +8,7 @@
     {% csrf_token %}
       title: <input type="text" name = 'title'>
     <br>
-    <p>
-      content: 
-    </p>
+    <p>content: </p>
     <textarea name="content" id="" cols="30" rows="10">
     </textarea>
     <br>
