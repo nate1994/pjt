@@ -11,10 +11,9 @@ def filmo_count(people, movie):
         'filoNames' : movie
     }
     response = requests.get(request, params = payload).json() #요청 -> 응답
+    # print(response)
     people_list = response.get('peopleListResult').get('peopleList')
-    
     for people in people_list: # 각 사람 정보 리스트 탐색 
-        # 왜 다른 영화들도 출력이 되는거지?
         if people['filmoNames'].find('아이언맨')> 0:
             mov = people['filmoNames'].split('|')
             cnt = len(mov)        

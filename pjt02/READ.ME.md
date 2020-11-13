@@ -1,56 +1,107 @@
 # READ.ME
 
-### problem_a
+[toc]
 
-- 첫 난관  :  정확한 api 데이터 요청을 이해하지 못했다. 처음에는 영화인(다우니)한명의 데이터를 어떻게 가지고 오는지 고민을 오래했다. 하지만 api제공 사이트를 잘 읽어보고 차근차근 접근해 나가며 문제를 해결했다.
+# API 활용한 데이터 수집
 
+**목표**
 
+1.  필모리스트를 이용하여 카운트 기능
 
-### problem_b
+2. 영화 검색기능
 
-- a번 문제에서 감을 익혔는지 데이터를 가져와서 활용하는 방안이 더 쉽게 느껴졌다.
+3. 특정 정보를 이용한 상세 정보 수집
 
-- 다만, 영화가 없을 때를 어떻게 해볼까 생각해봤다. 
-
-  다양한 방법이 있지만 나는 한번 프로젝트에서 예외처리를 통해서 결과를 만들어 보고 싶었다.
-
-  ```python
-  def get_movie_cd(title, director):
-      url_maker = URLMaker('9bda25102558de0a15fdafeacd305593')
-      request = url_maker.get_url('movie','searchMovieList')
-      payload = {
-          'movieNm' : title,
-          'directorNm' : director
-      }
-      response = requests.get(request, params = payload).json() #요청 -> 응답
-      try:  #'movieListResult'키의 -> 'movieList'의 키의 '첫 리스트의 moviecd
-          code = int(response.get('movieListResult').get('movieList')[0].get('movieCd'))
-      except IndexError: #만약 해당 영화가 없다면 리스트가 아예잡히지 않기 때문에 인덱스 에러가 발생
-          return 0
-      if code >0:
-         
-          return code
-  ```
-
-  그래서 함수를 이렇게 만들어보았다.
-
-  다양한 테스트 케이스에서 문제가 없다고 느껴져서 좋았다. 
+   부가) NAVER API 활용해보기 
 
 
 
-### Problem_c
+### 1. 필모리스트 정보를 활용한 기능
 
-- C번 문제도 빠르게 풀 수 있었다. 다만 코드를 다짜고 보니 공통부분을 변수처리를 하지 않고 해서 코드가 길어보이고 가독성이 떨어져보였다
+> 영화인명과 필모리스트를 이용하여 영화인을 검색하고 몇 작품을 출연, 제작등을 하였는지 계산
+>
+> 활용 API : kobis
 
-- 그래서 완성 후 바로 변수를 만들어서 최대한 간결하게 만들어 볼려고 했다
+1. URL 정보 만들기
 
-- 영화 Api를 이용하여 영화 정보를 가져와 다양한 활용도를 구사할 수 있는 토대가 마련되었다고 생각한다.
+   - url, key를 담은 class 만들기 (kobis.py)
 
-  => 다음 프로젝트가 기대된다.
+2. request 라이브러리를 활용하여 요청한 데이터 조작
+
+   -  요청한 데이터를 .json으로 바꿔주어서 `python`에서 다룰 수 있게 만들어 준다.
+   - 원하는 조건에 맞추어 데이터를 찾아서 카운트를 샜다.
+
+3. requests 기능 공부 
+
+   - GET 요청 parameter 전달
+
+     ```python
+     params = {'param1': 'value1', 'param2': 'value'} 
+     res = requests.get(URL, params=params)
+     ```
+
+   - POST요청
+
+     ```python
+     data = {'param1': 'value1', 'param2': 'value'}
+     res = requests.post(URL, data=data)
+     ```
+
+     
+
+### 2. 검색
+
+다양한 방법이 있지만 나는 한번 프로젝트에서 예외처리를 통해서 결과를 만들어 보기로 했다.
+
+```python
+def get_movie_cd(title, director):
+    url_maker = URLMaker('9bda25102558de0a15fdafeacd305593')
+    request = url_maker.get_url('movie','searchMovieList')
+    payload = {
+        'movieNm' : title,
+        'directorNm' : director
+    }
+    response = requests.get(request, params = payload).json() #요청 -> 응답
+    try:  #'movieListResult'키의 -> 'movieList'의 키의 '첫 리스트의 moviecd
+        code = int(response.get('movieListResult').get('movieList')[0].get('movieCd'))
+    except IndexError: #만약 해당 영화가 없다면 리스트가 아예잡히지 않기 때문에 인덱스 에러가 발생
+        return 0
+    if code >0:
+       
+        return code
+```
+
+다양한 테스트 케이스를 해보았고 문제가 없었다.
 
 
 
-### Problem_d
+### 3. 상세정보 수집
+
+> 검색 기능을 활용하여 상세 정보를 출력하는 함수를 만들어 보자
+
+**구성**
+
+```python
+    response = requests.get(request, params = payload).json() 
+    puplic = response['movieInfoResult']['movieInfo']
+    name = puplic['movieNm']
+    y = puplic['openDt']
+
+    gr = []
+    for i in puplic['genres']: # 리스트 
+        gr.append(i['genreNm'])
+    
+    if len(puplic['actors']) >= 1:
+        actor =  puplic['actors'][0]['peopleNm']
+    else:
+        actor = 'noActor'
+    result = dict(movieNm = name , openDt= y, genres = gr, actor = actor)
+    return result
+```
+
+
+
+### 추가
 
 ```python
 import requests
@@ -64,7 +115,7 @@ text = '기생충'
 res = requests.get(url+text, headers = header).json()
 
 main_actor = [] #주연배우들 
-actors_string = res.get('items')[0].get('actor') 
+actors_string = res.get('items')[1].get('actor') 
 main_actor = actors_string.split('|')
 main_actor.pop() #마지막 |제거 
 print(main_actor)

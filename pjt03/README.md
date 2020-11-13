@@ -1,7 +1,5 @@
 # README
 
-
-
 ### 🐱‍🚀pjt03 
 
 Django의 flow인 model -> url -> view -> template 흐름에 맞추어 절차적으로 하나하나 만들어가면서 프로젝트를 진행했습니다.

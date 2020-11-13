@@ -1,7 +1,8 @@
 import json
 
-# movies의 for문을 돌려서 -> 각 영화의 id를 통해 json파일을 연다. id 당 수익과 타이틀을 저장한다. 
-# ->최종 리턴은 타이틀
+# movies의 for문을 돌려서-> 각 영화의 id를 통해 json파일을 붙인다. 
+# id마다 수익과 타이틀을 저장한다. 
+# 
 
 def max_revenue(movies):
     result = [] #movies는 리스트 안에 딕셔너리 
