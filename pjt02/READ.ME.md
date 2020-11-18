@@ -99,8 +99,6 @@ def get_movie_cd(title, director):
     return result
 ```
 
-
-
 ### 추가
 
 ```python
@@ -114,13 +112,14 @@ url ='https://openapi.naver.com/v1/search/movie?query='
 text = '기생충'
 res = requests.get(url+text, headers = header).json()
 
-main_actor = [] #주연배우들 
+main_actor = [] #주연배우들
 actors_string = res.get('items')[1].get('actor') 
-main_actor = actors_string.split('|')
-main_actor.pop() #마지막 |제거 
-print(main_actor)
+main_actor = actors_string.split('|') # 
+main_actor.pop() # 마지막|제거 
+print(main_actor) 
 
 #간단하게 네이버 api활용하여 실습을 해보았다
 #네이버는 영화뿐만 아니라 다양한 api를 제공하는 것을 보았기 때문에 다른 프로젝트나 개인적으로 활용도 가능해보여서 나만을 위한 데이터 제공 애플리케이션을 만들어보겠다.
+
 ```
 
