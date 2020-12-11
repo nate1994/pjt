@@ -1,0 +1,244 @@
+{% extends 'home.html' %}
+
+{% block style %}
+.poster-size {
+  width: 350px;
+  height: 480px;
+}
+.like-button {
+	width: 70px;
+	height: 40px;
+	border-color: white;
+	color: white;
+  text-decoration: none;
+}
+.like-button:hover {
+  background: grey; 
+  color: white;
+}
+.search-style {
+  margin-top: 70px;
+  margin-bottom: 30px;
+}
+.btn-size {
+  width: 76px;
+}
+.left, .right{
+  font-size: 80px;
+  margin-top: 10rem;
+  margin-left : 20px;
+  margin-right: 20px;
+}
+a:hover{
+  text-decoration: none;
+}
+.container-fluid{
+  width : 1270px;
+  height : 700px;
+}
+
+.div-style {
+  height: 50px;
+  background-color: black;
+}
+.top-rated-text {
+  padding-left: 60px;
+}
+.plus-button {
+  padding-right: 65px;
+}
+.margin-search {
+  margin-bottom: 20px;
+}
+.login-text-style {
+  font-size: 16px;
+  margin-top: 15px;
+  margin-left:15px;
+}
+.recommand-margin-style {
+  margin-top: 150px;
+}
+{% endblock style %}
+
+{% block content %}
+
+<div class="container-fluid mt-5">
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="d-flex justify-content-between">
+        <div class="pt-3 top-rated-text">Top Rated</div>
+        
+        <a href="{% url 'movies:top_ratedlist' page='1' %}" class="plus-button">
+          <i class="far fa-plus-square" style="height: 5px;"></i>
+        </a>
+        
+      </div>
+      <div id="Carousel" class="carousel slide d-flex justify-content-between">
+        <a data-slide="prev" href="#Carousel" class="left carousel-control ">‹</a>
+
+        
+        <!-- Carousel items -->
+        <div class="carousel-inner mb-5">
+        <div class="carousel-item active">
+          <div class="row mt-3">
+          {% for f in first %}
+            <div class="col-md-4">
+              <a href="{% url 'movies:detail' f.pk %}"><img src="{{ f.poster_path }}" alt="Image" class="poster-size"></a>
+            </div>
+          {% endfor %}
+          </div><!--.row-->
+        </div><!--.item-->
+          
+        <div class="carousel-item">
+          <div class="row mt-3">
+            {% for s in second %}
+            <div class="col-md-4">
+              <a href="{% url 'movies:detail' s.pk %}"><img src="{{s.poster_path}}" alt="Image" class="poster-size"></a>
+            </div>
+          {% endfor %}
+          </div><!--.row-->
+        </div><!--.item-->
+          
+        <div class="carousel-item">
+          <div class="row mt-3">
+            {% for t in third %}
+              <div class="col-md-4"><a href="{% url 'movies:detail' t.pk %}"><img src="{{t.poster_path}}" alt="Image" class="poster-size"></a>        
+            </div>
+          {% endfor %}
+          </div><!--.row-->
+        </div><!--.item-->
+          
+        </div><!--.carousel-inner-->
+        
+      <a data-slide="next" href="#Carousel" class="right carousel-control">›</a>
+      <br><br><br><br><br><br><br><br><br><br><br><br>
+      <ol class="carousel-indicators">
+        <li data-target="#Carousel" data-slide-to="0" class="active"></li>
+        <li data-target="#Carousel" data-slide-to="1"></li>
+        <li data-target="#Carousel" data-slide-to="2"></li>
+      </ol>
+    </div><!--.Carousel-->     
+  </div>
+  </div>
+</div>
+
+<!-- 검색창 시작-->
+<div class="container search-style margin-search">
+    <label for="searchInput">DB 영화 검색</label>
+  <div class="row">
+    <div class="col-sm-11">
+      <input type="text" class="form-control" id="searchInput" placeholder="Search">
+    </div>
+    <button type="submit" class="btn btn-size btn-outline-light" id="searchBtn">검색</button>
+  </div>
+  
+</div>
+<!-- 검색창 끝 -->
+
+<!-- 검색결과 시작-->
+<div class="container">
+	<div class="row" id="searchResult">
+	</div>
+</div>
+<!-- 검색결과 끝-->
+
+
+<!-- 추천 영화 시작 -->
+<div class="container recommand-margin-style">
+  {% if request.user.is_authenticated %}
+  <h2>{{ request.user }}님에게 추천하는 영화</h2>
+  <div class="row">
+      {% if recommand %}
+        {% for movie in recommand %}
+          <div class="col-md-4">
+          <a href="{% url 'movies:detail' movie.pk %}"><img src="{{movie.poster_path}}" alt="Image" class="poster-size"></a>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="login-text-style">맘에 드는 영화에 좋아요를 눌러보세요! 추천 알고리즘으로 영화를 추천해드립니다😊</div>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>
+<!-- 추천 영화 끝 -->
+{% endblock content %}
+
+
+{% block script %}
+  <script>
+    const likeBtnForm = document.querySelectorAll('#form_like')
+    likeBtnForm.forEach(likeBtnForm=>{
+      // console.log(likeBtnForm.dataset.articleid) // movie의 pk 
+      const movieId = likeBtnForm.dataset.articleid 
+      likeBtnForm.addEventListener('click', function (e) {
+        e.preventDefault()
+        
+        const csrfToken = document.querySelector('input[name=csrfmiddlewaretoken]').value
+        const options = { headers: {'X-CSRFToken': csrfToken}}
+
+        const API_URL = `/movies/${movieId}/like/`
+        axios.post(API_URL, {}, options)
+          .then(res=>{
+            // console.log(res)
+            const {is_like,like_count} = res.data
+
+            // 하트 가져오기
+            const likeHeart = document.querySelector(`.heart-${movieId}`)
+            likeHeart.style.color = is_like ? 'crimson' : 'white'
+            const likeCount = document.querySelector(`#like_count-${movieId}`)
+            likeCount.innerText = like_count
+          })
+          .catch(err=>{
+            console.error(err)
+          })
+      })
+    }) 
+
+    const searchInput = document.querySelector('#searchInput')
+    const searchBtn = document.querySelector('#searchBtn')
+
+    function search () {
+      const URL = `/movies/search/${searchInput.value}/`
+
+      axios.get(URL)
+      .then(function (res) {
+        const resultArray = res.data.result
+        const searchResult = document.querySelector('#searchResult')
+
+        while (searchResult.firstChild) {
+          searchResult.removeChild(searchResult.firstChild)
+        }
+
+        for (const movie of resultArray) {
+          const posterDiv = document.createElement('div')
+          const posterAtag = document.createElement('a')
+          const posterImg = document.createElement('img')
+
+          searchResult.appendChild(posterDiv)
+
+          posterDiv.setAttribute('class', 'col-md-4')
+          posterDiv.appendChild(posterAtag)
+
+          posterAtag.appendChild(posterImg)
+          posterAtag.setAttribute('href', `${movie[1]}`)
+
+          posterImg.setAttribute('src', movie[0])
+          posterImg.setAttribute('class', 'poster-size')
+          posterImg.setAttribute('class', 'poster-size')
+        }
+      })
+      .catch(function (err) {
+        console.error(err)
+      })
+    }
+
+    searchBtn.addEventListener('click', search)
+    searchInput.addEventListener('keydown', function (e) {
+      if (e.code === 'Enter') {
+        search()
+      }
+    })
+    
+  </script>
+{% endblock  %}
